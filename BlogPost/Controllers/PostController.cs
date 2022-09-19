@@ -23,7 +23,7 @@ namespace BlogPost.Controllers
         public async Task<IActionResult> Index()
         {
               return _context.Posts != null ? 
-                          View(await _context.Posts.ToListAsync()) :
+                          View(await _context.Posts.OrderByDescending(p => p.CreatedDate).Take(8).ToListAsync()) :
                           Problem("Entity set 'ApplicationDbContext.Posts'  is null.");
         }
 
