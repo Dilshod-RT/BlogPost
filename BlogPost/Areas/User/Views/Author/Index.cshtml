@@ -1,0 +1,26 @@
+﻿@model IEnumerable<BlogPost.Models.Post>
+
+@{
+    ViewData["Title"] = "My Posts";
+}
+
+<h1>My Posts</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+@foreach (var item in Model)
+{
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">@item.Title</h5>
+            <p class="card-text">@item.Text</p>
+            <a class="btn btn-primary" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+            <a class="btn btn-info" asp-action="Details" asp-route-id="@item.Id">Details</a>
+            <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+        </div>
+        <h class="card-footer">@item.CreatedDate</h>
+    </div>
+<br />
+}
