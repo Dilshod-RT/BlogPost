@@ -14,11 +14,11 @@ namespace BlogPost.Areas.User.Controllers
 {
     [Area("User")]
     [Authorize(Roles = "User")]
-    public class AuthorController : Controller
+    public class PostController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public AuthorController(ApplicationDbContext context)
+        public PostController(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -64,7 +64,7 @@ namespace BlogPost.Areas.User.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(/*[Bind("Id,Title,Text,CreatedDate,AuthorId")]*/ PostVM post)
+        public async Task<IActionResult> Create(/*[Bind("Id,Title,Text,CreatedDate,AuthorId")]*/ PostCreateVM post)
         {
             if (ModelState.IsValid)
             {
@@ -99,7 +99,6 @@ namespace BlogPost.Areas.User.Controllers
             {
                 return NotFound();
             }
-            ViewData["AuthorId"] = new SelectList(_context.Users, "Id", "Id", post.AuthorId);
             return View(post);
         }
 
@@ -108,9 +107,11 @@ namespace BlogPost.Areas.User.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Text,CreatedDate,AuthorId")] PostVM post)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Text,CreatedDate,AuthorId")] PostEditVM postVM)
         {
-            /*if (id != post.Id)
+            var post = await _context.Posts.FindAsync(id);
+
+            if (id != postVM.Id)
             {
                 return NotFound();
             }
@@ -119,12 +120,20 @@ namespace BlogPost.Areas.User.Controllers
             {
                 try
                 {
+                    if (post == null)
+                    {
+                        return NotFound();
+                    }
+
+                    post.Title = postVM.Title;
+                    post.Text = postVM.Text;
+
                     _context.Update(post);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!PostExists(post.Id))
+                    if (!PostExists(postVM.Id))
                     {
                         return NotFound();
                     }
@@ -134,25 +143,7 @@ namespace BlogPost.Areas.User.Controllers
                     }
                 }
                 return RedirectToAction(nameof(Index));
-            }*/
-            if (ModelState.IsValid)
-            {
-                var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-                Post newPost = new()
-                {
-                    Id = id,
-                    Title = post.Title,
-                    Text = post.Text,
-                    CreatedDate = DateTime.Now,
-                    AuthorId = currentUserId
-                };
-
-                _context.Update(newPost);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
             }
-            //ViewData["CreaterId"] = new SelectList(_context.Set<ApplicationUser>(), "Id", "Id", post.CreaterId);
             return View(post);
         }
 
