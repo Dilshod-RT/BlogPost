@@ -28,7 +28,8 @@ namespace BlogPost.Areas.User.Controllers
         {
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var applicationDbContext = _context.Posts.Where(p => p.AuthorId == currentUserId)
+            var applicationDbContext = _context.Posts.Include(p => p.Author).Include(p => p.Status)
+                .Where(p => p.AuthorId == currentUserId)
                 .OrderByDescending(p => p.CreatedDate);
             return View(await applicationDbContext.ToListAsync());
         }
@@ -43,6 +44,7 @@ namespace BlogPost.Areas.User.Controllers
 
             var post = await _context.Posts
                 .Include(p => p.Author)
+                .Include(p => p.Status)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (post == null)
             {
@@ -55,7 +57,6 @@ namespace BlogPost.Areas.User.Controllers
         // GET: User/Author/Create
         public IActionResult Create()
         {
-            ViewData["AuthorId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
 
@@ -64,7 +65,7 @@ namespace BlogPost.Areas.User.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(/*[Bind("Id,Title,Text,CreatedDate,AuthorId")]*/ PostCreateVM post)
+        public async Task<IActionResult> Create(/*[Bind("Id,Title,Text,CreatedDate,AuthorId")]*/ PostCreateVM post, string submitbtn)
         {
             if (ModelState.IsValid)
             {
@@ -77,6 +78,16 @@ namespace BlogPost.Areas.User.Controllers
                     CreatedDate = DateTime.Now,
                     AuthorId = currentUserId
                 };
+
+                switch (submitbtn)
+                {
+                    case "Create as draft":
+                        newPost.StatusId = Enums.StatusesEnum.Draft;
+                        break;
+                    case "Submit to check":
+                        newPost.StatusId = Enums.StatusesEnum.WaitingForApproval;
+                        break;
+                }
 
                 _context.Posts.Add(newPost);
                 await _context.SaveChangesAsync();
@@ -99,6 +110,11 @@ namespace BlogPost.Areas.User.Controllers
             {
                 return NotFound();
             }
+
+            if (post.StatusId == Enums.StatusesEnum.WaitingForApproval)
+            {
+                return NotFound();
+            }
             return View(post);
         }
 
@@ -107,7 +123,7 @@ namespace BlogPost.Areas.User.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Text,CreatedDate,AuthorId")] PostEditVM postVM)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Text,CreatedDate,AuthorId")] PostEditVM postVM, string submitbtn)
         {
             var post = await _context.Posts.FindAsync(id);
 
@@ -128,6 +144,20 @@ namespace BlogPost.Areas.User.Controllers
                     post.Title = postVM.Title;
                     post.Text = postVM.Text;
 
+                    switch (submitbtn)
+                    {
+                        case "Save as draft":
+                            post.StatusId = Enums.StatusesEnum.Draft;
+                            break;
+                        case "Submit to check":
+                            post.StatusId = Enums.StatusesEnum.WaitingForApproval;
+                            break;
+                    }
+
+                    if (post.StatusId == Enums.StatusesEnum.WaitingForApproval)
+                    {
+                        return NotFound();
+                    }
                     _context.Update(post);
                     await _context.SaveChangesAsync();
                 }
@@ -163,6 +193,10 @@ namespace BlogPost.Areas.User.Controllers
                 return NotFound();
             }
 
+            if (post.StatusId == Enums.StatusesEnum.WaitingForApproval)
+            {
+                return NotFound();
+            }
             return View(post);
         }
 

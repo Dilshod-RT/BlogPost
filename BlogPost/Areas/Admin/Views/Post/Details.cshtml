@@ -1,0 +1,84 @@
+﻿@model BlogPost.Models.Post
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Post</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Text)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Text)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CreatedDate)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CreatedDate)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Author)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Author.Id)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Status)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Status.Id)
+        </dd>
+    </dl>
+</div>
+<div class="form-group">
+    <button type="button" onclick="Approve()" class="btn btn-primary" id="approvebtn">Approve</button>
+    <button type="button" onclick="Reject()"  class="btn btn-primary" id="rejectbtn">Reject</button>   
+</div>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+
+    <script>
+       function Approve(){
+            $.ajax({
+                url: "@Url.Action("Approve")",
+                method: "POST",
+                data: { id : @Model.Id},
+                async: true,
+                success: function (data) {
+                    $("#approvebtn").text("Published"),
+                    $("#rejectbtn").remove();
+                },
+                error: function(data){
+                   alert("Error");
+                }
+            });
+        }
+        function Reject(){
+            $.ajax({
+                url: "@Url.Action("Reject")",
+                method: "POST",
+                data: { id : @Model.Id},
+                async: true,
+                success: function (data) {
+                    $("#rejectbtn").text("Rejected"),
+                    $("#approvebtn").remove();
+                }, 
+            });
+        }
+    </script>
+}
