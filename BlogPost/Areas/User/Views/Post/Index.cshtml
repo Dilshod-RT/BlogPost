@@ -1,4 +1,5 @@
-﻿@model IEnumerable<BlogPost.Models.Post>
+﻿@using BlogPost.Enums
+@model IEnumerable<BlogPost.Models.Post>
 
 @{
     ViewData["Title"] = "My Posts";
@@ -16,7 +17,7 @@
         <div class="card-body">
             <h5 class="card-title">@item.Title</h5>
             <p class="card-text">@item.Text</p>
-            @if (@item.StatusId == 2)
+            @if (@item.StatusId == StatusesEnum.WaitingForApproval)
             {
             <a class="btn btn-info" asp-action="Details" asp-route-id="@item.Id">Details</a>
             }

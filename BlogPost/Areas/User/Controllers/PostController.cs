@@ -82,10 +82,10 @@ namespace BlogPost.Areas.User.Controllers
                 switch (submitbtn)
                 {
                     case "Create as draft":
-                        newPost.StatusId = 1;
+                        newPost.StatusId = Enums.StatusesEnum.Draft;
                         break;
                     case "Submit to check":
-                        newPost.StatusId = 2;
+                        newPost.StatusId = Enums.StatusesEnum.WaitingForApproval;
                         break;
                 }
 
@@ -107,6 +107,11 @@ namespace BlogPost.Areas.User.Controllers
 
             var post = await _context.Posts.FindAsync(id);
             if (post == null)
+            {
+                return NotFound();
+            }
+
+            if (post.StatusId == Enums.StatusesEnum.WaitingForApproval)
             {
                 return NotFound();
             }
@@ -142,13 +147,17 @@ namespace BlogPost.Areas.User.Controllers
                     switch (submitbtn)
                     {
                         case "Save as draft":
-                            post.StatusId = 1;
+                            post.StatusId = Enums.StatusesEnum.Draft;
                             break;
                         case "Submit to check":
-                            post.StatusId = 2;
+                            post.StatusId = Enums.StatusesEnum.WaitingForApproval;
                             break;
                     }
 
+                    if (post.StatusId == Enums.StatusesEnum.WaitingForApproval)
+                    {
+                        return NotFound();
+                    }
                     _context.Update(post);
                     await _context.SaveChangesAsync();
                 }
@@ -184,6 +193,10 @@ namespace BlogPost.Areas.User.Controllers
                 return NotFound();
             }
 
+            if (post.StatusId == Enums.StatusesEnum.WaitingForApproval)
+            {
+                return NotFound();
+            }
             return View(post);
         }
 

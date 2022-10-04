@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlogPost.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220929052946_StatusId")]
+    [Migration("20221004053806_StatusId")]
     partial class StatusId
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -127,10 +127,7 @@ namespace BlogPost.Data.Migrations
             modelBuilder.Entity("BlogPost.Models.Status", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Name")
                         .IsRequired()

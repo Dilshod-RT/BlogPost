@@ -24,9 +24,9 @@ namespace BlogPost.Areas.Admin.Controllers
         // GET: Admin/Post
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Posts.Include(p => p.Author).Include(p => p.Status)
-                .Where(p => p.StatusId != 1);
-            return View(await applicationDbContext.ToListAsync());
+            var posts = _context.Posts.Include(p => p.Author).Include(p => p.Status)
+                .Where(p => p.StatusId != Enums.StatusesEnum.Draft);
+            return View(await posts.ToListAsync());
         }
 
         // GET: Admin/Post/Details/5
@@ -66,7 +66,7 @@ namespace BlogPost.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            post.StatusId = 3;
+            post.StatusId = Enums.StatusesEnum.Published;
 
             _context.Update(post);
             await _context.SaveChangesAsync();
@@ -90,7 +90,7 @@ namespace BlogPost.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            post.StatusId = 4;
+            post.StatusId = Enums.StatusesEnum.Rejected;
 
             _context.Update(post);
             await _context.SaveChangesAsync();

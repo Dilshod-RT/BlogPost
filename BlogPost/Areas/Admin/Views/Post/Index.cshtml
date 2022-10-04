@@ -13,8 +13,6 @@
             <h5 class="card-title">@item.Title</h5>
             <p class="card-text">@item.Text</p>
             <a class="btn btn-primary" asp-action="Details" asp-route-id="@item.Id">Go Details</a>
-            <a class="btn btn-success" asp-action="Approve" asp-route-id="@item.Id">Approve</a>
-            <a class="btn btn-danger" asp-action="Reject" asp-route-id="@item.Id">Reject</a>
         </div>
         <h class="card-footer">@item.CreatedDate | Status:@item.Status.Name</h>
     </div>

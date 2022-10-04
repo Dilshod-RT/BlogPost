@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using BlogPost.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BlogPost.Models
 {
@@ -15,7 +16,7 @@ namespace BlogPost.Models
         public ApplicationUser Author { get; set; }
 
         [ForeignKey("Status")]
-        public int StatusId { get; set; }
+        public StatusesEnum StatusId { get; set; }
         public Status Status { get; set; }
     }
 }
