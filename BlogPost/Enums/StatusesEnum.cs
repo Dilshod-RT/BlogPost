@@ -3,8 +3,8 @@
     public enum StatusesEnum
     {
         Draft = 1,
-        WaitingForApproval,
-        Published,
-        Rejected
+        WaitingForApproval = 2,
+        Published = 3,
+        Rejected = 4
     }
 }

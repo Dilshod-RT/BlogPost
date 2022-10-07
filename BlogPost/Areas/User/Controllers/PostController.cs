@@ -9,6 +9,7 @@ using BlogPost.Data;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using BlogPost.ViewModels;
+using BlogPost.Services.Posts;
 
 namespace BlogPost.Areas.User.Controllers
 {
@@ -16,11 +17,11 @@ namespace BlogPost.Areas.User.Controllers
     [Authorize(Roles = "User")]
     public class PostController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly PostsService _postsService;
 
         public PostController(ApplicationDbContext context)
         {
-            _context = context;
+            _postsService =  new PostsService(context);
         }
 
         // GET: User/Author
@@ -28,24 +29,21 @@ namespace BlogPost.Areas.User.Controllers
         {
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var applicationDbContext = _context.Posts.Include(p => p.Author).Include(p => p.Status)
-                .Where(p => p.AuthorId == currentUserId)
-                .OrderByDescending(p => p.CreatedDate);
-            return View(await applicationDbContext.ToListAsync());
+            var post = _postsService.GetByAuthorId(currentUserId);
+
+            return View(post);
         }
 
         // GET: User/Author/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Posts == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var post = await _context.Posts
-                .Include(p => p.Author)
-                .Include(p => p.Status)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var post = _postsService.GetById(id.Value);
+
             if (post == null)
             {
                 return NotFound();
@@ -88,24 +86,22 @@ namespace BlogPost.Areas.User.Controllers
                         newPost.StatusId = Enums.StatusesEnum.WaitingForApproval;
                         break;
                 }
-
-                _context.Posts.Add(newPost);
-                await _context.SaveChangesAsync();
+                _postsService.Create(newPost); 
                 return RedirectToAction(nameof(Index));
             }
-
             return View(post);
         }
 
         // GET: User/Author/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Posts == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var post = await _context.Posts.FindAsync(id);
+            var post = _postsService.GetById(id.Value);
+
             if (post == null)
             {
                 return NotFound();
@@ -125,7 +121,7 @@ namespace BlogPost.Areas.User.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Text,CreatedDate,AuthorId")] PostEditVM postVM, string submitbtn)
         {
-            var post = await _context.Posts.FindAsync(id);
+            var post = _postsService.GetId(id);
 
             if (id != postVM.Id)
             {
@@ -158,12 +154,12 @@ namespace BlogPost.Areas.User.Controllers
                     {
                         return NotFound();
                     }
-                    _context.Update(post);
-                    await _context.SaveChangesAsync();
+                    _postsService.Edit(post);
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!PostExists(postVM.Id))
+                    if (!_postsService.PostExists(postVM.Id))
                     {
                         return NotFound();
                     }
@@ -180,14 +176,13 @@ namespace BlogPost.Areas.User.Controllers
         // GET: User/Author/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Posts == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var post = await _context.Posts
-                .Include(p => p.Author)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var post = _postsService.GetById(id.Value);
+
             if (post == null)
             {
                 return NotFound();
@@ -205,23 +200,14 @@ namespace BlogPost.Areas.User.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Posts == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Posts'  is null.");
-            }
-            var post = await _context.Posts.FindAsync(id);
+            var post = _postsService.GetId(id);
+
             if (post != null)
             {
-                _context.Posts.Remove(post);
+                _postsService.Delete(post);
             }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
 
-        private bool PostExists(int id)
-        {
-          return _context.Posts.Any(e => e.Id == id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }
