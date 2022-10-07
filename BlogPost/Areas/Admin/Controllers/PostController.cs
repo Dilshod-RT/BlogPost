@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BlogPost.Data;
 using Microsoft.AspNetCore.Authorization;
+using BlogPost.Services.Posts;
 
 namespace BlogPost.Areas.Admin.Controllers
 {
@@ -14,33 +15,33 @@ namespace BlogPost.Areas.Admin.Controllers
     [Authorize(Roles = "Admin")]
     public class PostController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly AdminPostsService _adminPostsService;
+        private readonly PostsService _postsService;
 
         public PostController(ApplicationDbContext context)
         {
-            _context = context;
+            _adminPostsService = new AdminPostsService(context);
+            _postsService = new PostsService(context);
         }
 
         // GET: Admin/Post
         public async Task<IActionResult> Index()
         {
-            var posts = _context.Posts.Include(p => p.Author).Include(p => p.Status)
-                .Where(p => p.StatusId != Enums.StatusesEnum.Draft);
-            return View(await posts.ToListAsync());
+            var posts = _adminPostsService.GetForAdmin();
+
+            return View(posts);
         }
 
         // GET: Admin/Post/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Posts == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var post = await _context.Posts
-                .Include(p => p.Author)
-                .Include(p => p.Status)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var post = _postsService.GetById(id.Value);
+
             if (post == null)
             {
                 return NotFound();
@@ -52,54 +53,39 @@ namespace BlogPost.Areas.Admin.Controllers
         // Post: Admin/Post/Approve/5
         public async Task<IActionResult> Approve(int? id)
         {
-            if (id == null || _context.Posts == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var post = await _context.Posts
-                .Include(p => p.Author)
-                .Include(p => p.Status)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var post = _postsService.GetById(id.Value);
+
             if (post == null)
             {
                 return NotFound();
             }
 
-            post.StatusId = Enums.StatusesEnum.Published;
-
-            _context.Update(post);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            _adminPostsService.Approve(post);
+            return Ok();
         }
 
         // Post: Admin/Post/Reject/5
         public async Task<IActionResult> Reject(int? id)
         {
-            if (id == null || _context.Posts == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var post = await _context.Posts
-                .Include(p => p.Author)
-                .Include(p => p.Status)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var post = _postsService.GetById(id.Value);
+
             if (post == null)
             {
                 return NotFound();
             }
 
-            post.StatusId = Enums.StatusesEnum.Rejected;
-
-            _context.Update(post);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool PostExists(int id)
-        {
-          return _context.Posts.Any(e => e.Id == id);
+            _adminPostsService.Reject(post);
+            return Ok();
         }
     }
 }
