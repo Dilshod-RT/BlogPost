@@ -1,10 +1,11 @@
 ﻿using BlogPost.Data;
 using BlogPost.Models;
+using BlogPost.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlogPost.Services.Posts
 {
-    public class PostsService
+    public class PostsService : IPostsService
     {
         private readonly ApplicationDbContext _context;
 
@@ -45,7 +46,7 @@ namespace BlogPost.Services.Posts
         public Post Create(Post post)
         {
             _context.Posts.Add(post);
-            _context.SaveChangesAsync();
+            _context.SaveChanges();
 
             return post;
         }
@@ -53,7 +54,7 @@ namespace BlogPost.Services.Posts
         public Post Edit(Post post)
         {
             _context.Update(post);
-            _context.SaveChangesAsync();
+            _context.SaveChanges();
 
             return post;
         }
@@ -61,7 +62,7 @@ namespace BlogPost.Services.Posts
         public Post Delete(Post post)
         {
             _context.Posts.Remove(post);
-            _context.SaveChangesAsync();
+            _context.SaveChanges();
 
             return post;
         }

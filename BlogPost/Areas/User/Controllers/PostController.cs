@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using BlogPost.Data;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using BlogPost.ViewModels;
 using BlogPost.Services.Posts;
+using BlogPost.Services.Interfaces;
 
 namespace BlogPost.Areas.User.Controllers
 {
@@ -17,11 +17,11 @@ namespace BlogPost.Areas.User.Controllers
     [Authorize(Roles = "User")]
     public class PostController : Controller
     {
-        private readonly PostsService _postsService;
+        private readonly IPostsService _postsService;
 
-        public PostController(ApplicationDbContext context)
+        public PostController(IPostsService postsService)
         {
-            _postsService =  new PostsService(context);
+            _postsService = postsService;
         }
 
         // GET: User/Author
@@ -150,10 +150,6 @@ namespace BlogPost.Areas.User.Controllers
                             break;
                     }
 
-                    if (post.StatusId == Enums.StatusesEnum.WaitingForApproval)
-                    {
-                        return NotFound();
-                    }
                     _postsService.Edit(post);
 
                 }

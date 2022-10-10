@@ -5,18 +5,17 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using BlogPost.Data;
-using BlogPost.Services.Posts;
+using BlogPost.Services.Interfaces;
 
 namespace BlogPost.Controllers
 {
     public class PostController : Controller
     {
-        private readonly PostsService _postsService;
+        private readonly IPostsService _postsService;
 
-        public PostController(ApplicationDbContext context)
+        public PostController(IPostsService postsService)
         {
-            _postsService = new PostsService(context);
+            _postsService = postsService;
         }
 
         // GET: Post
