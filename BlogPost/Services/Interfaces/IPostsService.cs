@@ -2,13 +2,13 @@
 {
     public interface IPostsService
     {
-        public List<Post> GetAllPublished();
-        public Post GetById(int id);
-        public Post GetId(int id);
-        public List<Post> GetByAuthorId(string authorId);
-        public Post Create(Post post);
-        public Post Edit(Post post);
-        public Post Delete(Post post);
-        public bool PostExists(int id);
+        List<Post> GetAllPublished();
+        Post GetById(int id);
+        Post GetId(int id);
+        List<Post> GetByAuthorId(string authorId);
+        Post Create(Post post);
+        Post Edit(Post post);
+        Post Delete(Post post);
+        bool PostExists(int id);
     }
 }

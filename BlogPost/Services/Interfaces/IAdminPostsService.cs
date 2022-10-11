@@ -2,8 +2,8 @@
 {
     public interface IAdminPostsService
     {
-        public List<Post> GetForAdmin();
-        public Post Approve(Post post);
-        public Post Reject(Post post);
+        List<Post> GetForAdmin();
+        Post Approve(Post post);
+        Post Reject(Post post);
     }
 }
