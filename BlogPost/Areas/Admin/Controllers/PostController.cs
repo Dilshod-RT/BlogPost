@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using BlogPost.Data;
 using Microsoft.AspNetCore.Authorization;
-using BlogPost.Services.Posts;
+using BlogPost.Services.Interfaces;
 
 namespace BlogPost.Areas.Admin.Controllers
 {
@@ -15,13 +14,13 @@ namespace BlogPost.Areas.Admin.Controllers
     [Authorize(Roles = "Admin")]
     public class PostController : Controller
     {
-        private readonly AdminPostsService _adminPostsService;
-        private readonly PostsService _postsService;
+        private readonly IAdminPostsService _adminPostsService;
+        private readonly IPostsService _postsService;
 
-        public PostController(ApplicationDbContext context)
+        public PostController(IAdminPostsService adminPostsService, IPostsService postsService)
         {
-            _adminPostsService = new AdminPostsService(context);
-            _postsService = new PostsService(context);
+            _adminPostsService = adminPostsService;
+            _postsService = postsService;
         }
 
         // GET: Admin/Post

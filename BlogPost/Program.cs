@@ -1,4 +1,6 @@
 using BlogPost.Data;
+using BlogPost.Services.Interfaces;
+using BlogPost.Services.Posts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -19,6 +21,9 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.ClaimsIdentity.UserIdClaimType = ClaimTypes.NameIdentifier);
 
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<IPostsService, PostsService>();
+builder.Services.AddScoped<IAdminPostsService, AdminPostsService>();
 
 var app = builder.Build();
 
