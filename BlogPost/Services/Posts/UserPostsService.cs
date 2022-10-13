@@ -9,13 +9,6 @@ namespace BlogPost.Services.Posts
         public UserPostsService(ApplicationDbContext context) : base(context)
         {
         }
-        
-        public Post GetId(int id)
-        {
-            var post = _context.Posts.Find(id);
-
-            return post;
-        }
 
         public List<Post> GetByAuthorId(string authorId)
         {

@@ -120,7 +120,7 @@ namespace BlogPost.Areas.User.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Text,CreatedDate,AuthorId")] PostEditVM postVM, string submitbtn)
         {
-            var post = _userPostsService.GetId(id);
+            var post = _userPostsService.GetById(id);
 
             if (id != postVM.Id)
             {
@@ -195,7 +195,7 @@ namespace BlogPost.Areas.User.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var post = _userPostsService.GetId(id);
+            var post = _userPostsService.GetById(id);
 
             if (post != null)
             {
