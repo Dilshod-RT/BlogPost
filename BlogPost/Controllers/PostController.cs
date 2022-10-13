@@ -4,24 +4,23 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using BlogPost.Services.Interfaces;
 
 namespace BlogPost.Controllers
 {
     public class PostController : Controller
     {
-        private readonly IPostsService _postsService;
+        private readonly IBlogPostsService _blogPostsService;
 
-        public PostController(IPostsService postsService)
+        public PostController(IBlogPostsService blogPostsService)
         {
-            _postsService = postsService;
+            _blogPostsService = blogPostsService;
         }
 
         // GET: Post
         public async Task<IActionResult> Index()
         {
-            var posts = _postsService.GetAllPublished();
+            var posts = _blogPostsService.GetAllPublished();
 
             return View(posts);
         }
@@ -34,7 +33,7 @@ namespace BlogPost.Controllers
                 return NotFound();
             }
 
-            var post = _postsService.GetById(id.Value);
+            var post = _blogPostsService.GetById(id.Value);
 
             if (post == null)
             {

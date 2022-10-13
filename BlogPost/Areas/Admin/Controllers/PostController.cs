@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using BlogPost.Services.Interfaces;
 
@@ -15,12 +14,10 @@ namespace BlogPost.Areas.Admin.Controllers
     public class PostController : Controller
     {
         private readonly IAdminPostsService _adminPostsService;
-        private readonly IPostsService _postsService;
 
-        public PostController(IAdminPostsService adminPostsService, IPostsService postsService)
+        public PostController(IAdminPostsService adminPostsService)
         {
             _adminPostsService = adminPostsService;
-            _postsService = postsService;
         }
 
         // GET: Admin/Post
@@ -39,7 +36,7 @@ namespace BlogPost.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var post = _postsService.GetById(id.Value);
+            var post = _adminPostsService.GetById(id.Value);
 
             if (post == null)
             {
@@ -57,7 +54,7 @@ namespace BlogPost.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var post = _postsService.GetById(id.Value);
+            var post = _adminPostsService.GetById(id.Value);
 
             if (post == null)
             {
@@ -76,7 +73,7 @@ namespace BlogPost.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var post = _postsService.GetById(id.Value);
+            var post = _adminPostsService.GetById(id.Value);
 
             if (post == null)
             {

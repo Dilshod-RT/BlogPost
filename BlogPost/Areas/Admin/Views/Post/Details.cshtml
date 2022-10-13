@@ -77,7 +77,10 @@
                 success: function (data) {
                     $("#rejectbtn").text("Rejected"),
                     $("#approvebtn").remove();
-                }, 
+                },
+                error: function(data){
+                   alert("Error");
+                }
             });
         }
     </script>
