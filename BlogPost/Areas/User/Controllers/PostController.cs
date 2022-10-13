@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using BlogPost.ViewModels;
-using BlogPost.Services.Posts;
 using BlogPost.Services.Interfaces;
 
 namespace BlogPost.Areas.User.Controllers
@@ -17,11 +16,11 @@ namespace BlogPost.Areas.User.Controllers
     [Authorize(Roles = "User")]
     public class PostController : Controller
     {
-        private readonly IPostsService _postsService;
+        private readonly IUserPostsService _userPostsService;
 
-        public PostController(IPostsService postsService)
+        public PostController(IUserPostsService userPostsService)
         {
-            _postsService = postsService;
+            _userPostsService = userPostsService;
         }
 
         // GET: User/Author
@@ -29,7 +28,7 @@ namespace BlogPost.Areas.User.Controllers
         {
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var post = _postsService.GetByAuthorId(currentUserId);
+            var post = _userPostsService.GetByAuthorId(currentUserId);
 
             return View(post);
         }
@@ -42,7 +41,7 @@ namespace BlogPost.Areas.User.Controllers
                 return NotFound();
             }
 
-            var post = _postsService.GetById(id.Value);
+            var post = _userPostsService.GetById(id.Value);
 
             if (post == null)
             {
@@ -86,7 +85,7 @@ namespace BlogPost.Areas.User.Controllers
                         newPost.StatusId = Enums.StatusesEnum.WaitingForApproval;
                         break;
                 }
-                _postsService.Create(newPost); 
+                _userPostsService.Create(newPost); 
                 return RedirectToAction(nameof(Index));
             }
             return View(post);
@@ -100,7 +99,7 @@ namespace BlogPost.Areas.User.Controllers
                 return NotFound();
             }
 
-            var post = _postsService.GetById(id.Value);
+            var post = _userPostsService.GetById(id.Value);
 
             if (post == null)
             {
@@ -121,7 +120,7 @@ namespace BlogPost.Areas.User.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Text,CreatedDate,AuthorId")] PostEditVM postVM, string submitbtn)
         {
-            var post = _postsService.GetId(id);
+            var post = _userPostsService.GetById(id);
 
             if (id != postVM.Id)
             {
@@ -150,12 +149,12 @@ namespace BlogPost.Areas.User.Controllers
                             break;
                     }
 
-                    _postsService.Edit(post);
+                    _userPostsService.Edit(post);
 
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!_postsService.PostExists(postVM.Id))
+                    if (!_userPostsService.PostExists(postVM.Id))
                     {
                         return NotFound();
                     }
@@ -177,7 +176,7 @@ namespace BlogPost.Areas.User.Controllers
                 return NotFound();
             }
 
-            var post = _postsService.GetById(id.Value);
+            var post = _userPostsService.GetById(id.Value);
 
             if (post == null)
             {
@@ -196,11 +195,11 @@ namespace BlogPost.Areas.User.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var post = _postsService.GetId(id);
+            var post = _userPostsService.GetById(id);
 
             if (post != null)
             {
-                _postsService.Delete(post);
+                _userPostsService.Delete(post);
             }
 
             return RedirectToAction(nameof(Index));

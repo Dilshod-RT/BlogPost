@@ -22,8 +22,10 @@ builder.Services.Configure<IdentityOptions>(options =>
 
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddScoped<IPostsService, PostsService>();
 builder.Services.AddScoped<IAdminPostsService, AdminPostsService>();
+builder.Services.AddScoped<IUserPostsService, UserPostsService>();
+builder.Services.AddScoped<IBlogPostsService, BlogPostsService>();
+builder.Services.AddScoped<IBasePostsService, BasePostsService>();
 
 var app = builder.Build();
 

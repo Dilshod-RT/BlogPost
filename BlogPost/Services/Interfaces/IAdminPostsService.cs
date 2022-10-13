@@ -1,6 +1,6 @@
 ﻿namespace BlogPost.Services.Interfaces
 {
-    public interface IAdminPostsService
+    public interface IAdminPostsService : IBasePostsService
     {
         List<Post> GetForAdmin();
         Post Approve(Post post);
